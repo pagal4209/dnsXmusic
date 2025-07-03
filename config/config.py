@@ -98,7 +98,7 @@ API_KEY = getenv("API_KEY", None) # youtube song api key, get it from https://t.
 # For customized or modified Repository
 UPSTREAM_REPO = getenv(
     "UPSTREAM_REPO",
-    "https://github.com/shivmish8090/dnsXmusic",
+    "https://github.com/pagal4209/dnsXmusic",
 )
 UPSTREAM_BRANCH = getenv("UPSTREAM_BRANCH", "master")
 
