@@ -5,7 +5,7 @@ import aiohttp
 import aiofiles
 from youtubesearchpython.__future__ import VideosSearch
 
-async def gen_music_ui_thumb(videoid):
+async def gen_thumb(videoid):
     if os.path.isfile(f"cache/{videoid}_musicui.png"):
         return f"cache/{videoid}_musicui.png"
 
