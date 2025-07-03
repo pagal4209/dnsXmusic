@@ -32,5 +32,5 @@ ytdlx
 pymongo
 youtube-search-python
 youtube_search
-git+https://github.com/KurimuzonAkuma/pyrogram@dev
-#git+https://github.com/Vivekkumar-IN/yt-dlp-youtube-oauth2
+pyrogram==2.0.106
+
