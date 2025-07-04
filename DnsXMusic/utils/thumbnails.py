@@ -44,24 +44,25 @@ async def generate_simple_thumb(videoid, filename):
     draw = ImageDraw.Draw(background)
 
     try:
-        # Square size
+        # Rectangle size
         rect_width = 700
         rect_height = 400
 
-        # Center coordinates for square
-        cx = (1280 - square_size) // 2
-        cy = (720 - square_size) // 2
+        # Center coordinates
+        cx = (1280 - rect_width) // 2
+        cy = (720 - rect_height) // 2
 
-        # Back square
-        back_img = Image.open("assets/back.png").convert("RGBA").resize((rect_width, rect_height)) 
+        # Back rectangle
+        back_img = Image.open("assets/back.png").convert("RGBA").resize((rect_width, rect_height))
         background.paste(back_img, (cx, cy), back_img)
 
-        # Song thumbnail inside square
+        # Song thumbnail on left inside rectangle
         song_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((160, 160))
         thumb_x = cx + 40
         thumb_y = cy + (rect_height - 160) // 2
         background.paste(song_thumb, (thumb_x, thumb_y), song_thumb)
-        # Overlay control.png
+
+        # Overlay control.png on rectangle
         control_img = Image.open("assets/cntrol.png").convert("RGBA").resize((rect_width, rect_height))
         background.paste(control_img, (cx, cy), control_img)
 
@@ -71,13 +72,13 @@ async def generate_simple_thumb(videoid, filename):
 
     # Title
     first_word = title.split()[0] if title else ""
-    draw.text((thumb_x, thumb_y + 170), first_word, font=title_font, fill="red")
+    draw.text((thumb_x + 180, thumb_y), first_word, font=title_font, fill="red")
 
     # Channel
-    draw.text((thumb_x, thumb_y + 220), channel, font=channel_font, fill="red")
+    draw.text((thumb_x + 180, thumb_y + 60), channel, font=channel_font, fill="red")
 
     # Duration
-    draw.text((thumb_x, thumb_y + 270), f"{duration}", font=duration_font, fill="red")
+    draw.text((thumb_x + 180, thumb_y + 120), f"{duration}", font=duration_font, fill="red")
 
     # Watermark
     draw.text((640, 60), "DnsXmusic", font=watermark_font, fill=(255, 255, 255, 180), anchor="mm")
