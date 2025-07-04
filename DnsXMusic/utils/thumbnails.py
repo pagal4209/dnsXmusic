@@ -11,14 +11,10 @@ channel_font = ImageFont.truetype("assets/font2.ttf", 34)
 duration_font = ImageFont.truetype("assets/font.ttf", 30)
 watermark_font = ImageFont.truetype("assets/font.ttf", 20)
 
-# Red blur background
-def apply_red_blur_overlay(image, opacity=0.6):
-    image = image.convert("RGBA")
-    blurred = image.filter(ImageFilter.GaussianBlur(25))
-    red_overlay = Image.new("RGBA", image.size, (255, 49, 99, int(100 * opacity)))
-    red_blurred = Image.alpha_composite(blurred, red_overlay)
-    red_blurred = ImageEnhance.Brightness(red_blurred).enhance(0.9)
-    return red_blurred
+# Apply soft black fog overlay
+def apply_black_fog(image, opacity=0.3):
+    fog = Image.new("RGBA", image.size, (0, 0, 0, int(255 * opacity)))
+    return Image.alpha_composite(image.convert("RGBA"), fog)
 
 # Main function
 async def generate_simple_thumb(videoid, filename):
@@ -40,9 +36,11 @@ async def generate_simple_thumb(videoid, filename):
                 async with aiofiles.open(f"cache/thumb_{videoid}.jpg", "wb") as f:
                     await f.write(await resp.read())
 
-    # Load base and apply red blur
+    # Load base image (YouTube thumbnail)
     base = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((1280, 720))
-    background = apply_red_blur_overlay(base)
+
+    # Add soft black fog
+    background = apply_black_fog(base, opacity=0.3)
     draw = ImageDraw.Draw(background)
 
     try:
