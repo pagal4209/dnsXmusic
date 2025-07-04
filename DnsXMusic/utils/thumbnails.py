@@ -6,8 +6,8 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 from youtubesearchpython.__future__ import VideosSearch
 
 # Fonts
-title_font = ImageFont.truetype("assets/font3.ttf", 42)
-channel_font = ImageFont.truetype("assets/font2.ttf", 34)
+title_font = ImageFont.truetype("assets/font3.ttf", 35)
+channel_font = ImageFont.truetype("assets/font2.ttf", 25)
 duration_font = ImageFont.truetype("assets/font.ttf", 10)
 watermark_font = ImageFont.truetype("assets/font.ttf", 20)
 
@@ -72,10 +72,10 @@ async def generate_simple_thumb(videoid, filename):
 
     # Title
     first_word = title.split()[0] if title else ""
-    draw.text((500, 420), first_word, font=title_font, fill="red")
+    draw.text((500, 380), first_word, font=title_font, fill="red")
 
     # Channel
-    draw.text((500, 450), channel, font=channel_font, fill="red")
+    draw.text((500, 400), channel, font=channel_font, fill="red")
 
     # Duration
     draw.text((800, 480), f"{duration}", font=duration_font, fill="black")
