@@ -57,8 +57,8 @@ async def generate_simple_thumb(videoid, filename):
         background.paste(back_img, (cx, cy), back_img)
 
         # Song thumbnail on left inside rectangle
-        song_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((250, 220))
-        thumb_x = cx + (rect_width - 250 ) // 2
+        song_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((290, 260))
+        thumb_x = cx + (rect_width - 290 ) // 2
         thumb_y = cy + 30
         background.paste(song_thumb, (thumb_x, thumb_y), song_thumb)
 
