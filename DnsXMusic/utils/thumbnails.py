@@ -5,18 +5,15 @@ import aiofiles
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 from youtubesearchpython.__future__ import VideosSearch
 
-# Fonts
 title_font = ImageFont.truetype("assets/font3.ttf", 35)
 channel_font = ImageFont.truetype("assets/font2.ttf", 25)
 duration_font = ImageFont.truetype("assets/font.ttf", 10)
 watermark_font = ImageFont.truetype("assets/font.ttf", 20)
 
-# Apply soft black fog overlay
 def apply_black_fog(image, opacity=0.0):
     fog = Image.new("RGBA", image.size, (0, 0, 0, int(255 * opacity)))
     return Image.alpha_composite(image.convert("RGBA"), fog)
 
-# Main function
 async def generate_simple_thumb(videoid, filename):
     if os.path.isfile(filename):
         return filename
@@ -36,33 +33,24 @@ async def generate_simple_thumb(videoid, filename):
                 async with aiofiles.open(f"cache/thumb_{videoid}.jpg", "wb") as f:
                     await f.write(await resp.read())
 
-    # Load base image (YouTube thumbnail)
     base = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((1280, 720))
-
-    # Add soft black fog
     background = apply_black_fog(base, opacity=0.5)
     draw = ImageDraw.Draw(background)
 
     try:
-        # Rectangle size
         rect_width = 600
         rect_height = 500
-
-        # Center coordinates
         cx = (1280 - rect_width) // 2
         cy = (720 - rect_height) // 2
 
-        # Back rectangle
         back_img = Image.open("assets/back.png").convert("RGBA").resize((rect_width, rect_height))
         background.paste(back_img, (cx, cy), back_img)
 
-        # Song thumbnail on left inside rectangle
         song_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((300, 245))
-        thumb_x = cx + (rect_width - 300 ) // 2
+        thumb_x = cx + (rect_width - 300) // 2
         thumb_y = cy + 30
         background.paste(song_thumb, (thumb_x, thumb_y), song_thumb)
 
-        # Overlay control.png on rectangle
         control_img = Image.open("assets/cntrol.png").convert("RGBA").resize((rect_width, rect_height))
         background.paste(control_img, (cx, cy), control_img)
 
@@ -70,40 +58,30 @@ async def generate_simple_thumb(videoid, filename):
         print(f"Error loading images: {e}")
         return None
 
-    # Show words that fit within 10 letters, then add "..."
-max_chars = 10
-title_words = title.split()
-short_title = ""
-total_chars = 0
+    max_chars = 10
+    title_words = title.split()
+    short_title = ""
+    total_chars = 0
 
-for word in title_words:
-    if total_chars + len(word) + (1 if short_title else 0) <= max_chars:
-        short_title += (" " if short_title else "") + word
-        total_chars += len(word) + (1 if short_title else 0)
-    else:
-        break
+    for word in title_words:
+        if total_chars + len(word) + (1 if short_title else 0) <= max_chars:
+            short_title += (" " if short_title else "") + word
+            total_chars += len(word) + (1 if short_title else 0)
+        else:
+            break
 
-# Add ellipsis if title is longer than what we displayed
     short_title = short_title.strip()
     if short_title != title:
-    short_title += "..."
+        short_title += "..."
 
-# Draw on image
     draw.text((500, 380), short_title, font=title_font, fill="black")
-
-    # Channel
     draw.text((500, 430), channel, font=channel_font, fill="black")
-
-    # Duration
     draw.text((800, 480), f"{duration}", font=duration_font, fill="black")
-
-    # Watermark
     draw.text((590, 112), "DnsXmusic", font=watermark_font, fill="black")
 
     background.save(filename)
     return filename
 
-# Shortcut functions
 async def gen_qthumb(videoid):
     return await generate_simple_thumb(videoid, f"cache/{videoid}_qv4.png")
 
