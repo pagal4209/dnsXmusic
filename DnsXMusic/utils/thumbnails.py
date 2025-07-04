@@ -58,8 +58,8 @@ async def generate_simple_thumb(videoid, filename):
 
         # Song thumbnail on left inside rectangle
         song_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((160, 160))
-        thumb_x = cx + 40
-        thumb_y = cy + (rect_height - 160) // 2
+        thumb_x = cx + (rect_width - 160 ) // 2
+        thumb_y = cy + 30
         background.paste(song_thumb, (thumb_x, thumb_y), song_thumb)
 
         # Overlay control.png on rectangle
