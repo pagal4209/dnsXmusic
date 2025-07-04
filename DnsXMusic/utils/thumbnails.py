@@ -72,13 +72,13 @@ async def generate_simple_thumb(videoid, filename):
 
     # Title
     first_word = title.split()[0] if title else ""
-    draw.text((500, 500), first_word, font=title_font, fill="red")
+    draw.text((500, 420), first_word, font=title_font, fill="red")
 
     # Channel
-    draw.text((500, 500), channel, font=channel_font, fill="red")
+    draw.text((500, 450), channel, font=channel_font, fill="red")
 
     # Duration
-    draw.text((900, 460), f"{duration}", font=duration_font, fill="black")
+    draw.text((700, 460), f"{duration}", font=duration_font, fill="black")
 
     # Watermark
     draw.text((640, 60), "DnsXmusic", font=watermark_font, fill=(255, 255, 255, 180), anchor="mm")
