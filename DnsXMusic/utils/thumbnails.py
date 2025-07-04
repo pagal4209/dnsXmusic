@@ -72,10 +72,10 @@ async def generate_simple_thumb(videoid, filename):
 
     # Title
     first_word = title.split()[0] if title else ""
-    draw.text((500, 380), first_word, font=title_font, fill="red")
+    draw.text((500, 380), first_word, font=title_font, fill="black")
 
     # Channel
-    draw.text((500, 400), channel, font=channel_font, fill="red")
+    draw.text((500, 430), channel, font=channel_font, fill="black")
 
     # Duration
     draw.text((800, 480), f"{duration}", font=duration_font, fill="black")
