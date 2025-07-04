@@ -8,7 +8,7 @@ from youtubesearchpython.__future__ import VideosSearch
 # Fonts
 title_font = ImageFont.truetype("assets/font3.ttf", 42)
 channel_font = ImageFont.truetype("assets/font2.ttf", 34)
-duration_font = ImageFont.truetype("assets/font.ttf", 30)
+duration_font = ImageFont.truetype("assets/font.ttf", 10)
 watermark_font = ImageFont.truetype("assets/font.ttf", 20)
 
 # Apply soft black fog overlay
@@ -78,7 +78,7 @@ async def generate_simple_thumb(videoid, filename):
     draw.text((500, 450), channel, font=channel_font, fill="red")
 
     # Duration
-    draw.text((700, 460), f"{duration}", font=duration_font, fill="black")
+    draw.text((750, 460), f"{duration}", font=duration_font, fill="black")
 
     # Watermark
     draw.text((640, 60), "DnsXmusic", font=watermark_font, fill=(255, 255, 255, 180), anchor="mm")
