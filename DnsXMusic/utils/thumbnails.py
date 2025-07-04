@@ -47,7 +47,7 @@ async def generate_simple_thumb(videoid, filename):
 
     try:
         # Square size
-        square_size = 400
+        square_size = 520
 
         # Center coordinates for square
         cx = (1280 - square_size) // 2
@@ -60,7 +60,7 @@ async def generate_simple_thumb(videoid, filename):
         # Song thumbnail inside square
         song_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((160, 160))
         thumb_x = cx + (square_size - 160) // 2
-        thumb_y = cy + 40
+        thumb_y = cy + 60
         background.paste(song_thumb, (thumb_x, thumb_y), song_thumb)
 
         # Overlay control.png
@@ -73,10 +73,10 @@ async def generate_simple_thumb(videoid, filename):
 
     # Title
     first_word = title.split()[0] if title else ""
-    draw.text((thumb_x, thumb_y + 170), first_word, font=title_font, fill="white")
+    draw.text((thumb_x, thumb_y + 170), first_word, font=title_font, fill="red")
 
     # Channel
-    draw.text((thumb_x, thumb_y + 220), channel, font=channel_font, fill="white")
+    draw.text((thumb_x, thumb_y + 220), channel, font=channel_font, fill="red")
 
     # Duration
     draw.text((thumb_x, thumb_y + 270), f"Duration: {duration}", font=duration_font, fill="white")
