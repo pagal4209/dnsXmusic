@@ -14,7 +14,7 @@ watermark_font = ImageFont.truetype("assets/font.ttf", 20)
 # Dark overlay with red tint and blur
 def apply_red_blur_overlay(image, opacity=0.6):
     blurred = image.filter(ImageFilter.GaussianBlur(25))
-    red_overlay = Image.new("RGBA", image.size, (255, 49, 99, int(130 * opacity)))
+    red_overlay = Image.new("RGBA", image.size, (255, 49, 99, int(90 * opacity)))
     return Image.alpha_composite(blurred.convert("RGBA"), red_overlay)
 
 # Multiline text wrapper and centered drawing
@@ -75,7 +75,7 @@ async def generate_simple_thumb(videoid, filename):
 
     # Center thumbnail (medium size) inside control
     center_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((200, 150))
-    thumb_cx = 640 - center_thumb.width // 2
+    thumb_cx = 500 - center_thumb.width // 2
     thumb_cy = 360 - center_thumb.height // 2
     background.paste(center_thumb, (thumb_cx, thumb_cy))
 
