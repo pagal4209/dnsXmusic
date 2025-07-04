@@ -45,8 +45,8 @@ async def generate_simple_thumb(videoid, filename):
 
     try:
         # Rectangle size
-        rect_width = 700
-        rect_height = 400
+        rect_width = 600
+        rect_height = 500
 
         # Center coordinates
         cx = (1280 - rect_width) // 2
