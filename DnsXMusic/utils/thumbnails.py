@@ -12,7 +12,7 @@ duration_font = ImageFont.truetype("assets/font.ttf", 30)
 
 # Dark overlay
 def apply_dark_overlay(image, opacity=0.7):
-    black_overlay = Image.new("RGBA", image.size, (0, 0, 0, int(255 * opacity)))
+    black_overlay = Image.new("RGBA", image.size, (0, 0, 0, int(150 * opacity)))
     return Image.alpha_composite(image.convert("RGBA"), black_overlay)
 
 # Generate thumbnail with overlay and UI
@@ -53,7 +53,7 @@ async def generate_simple_thumb(videoid, filename):
         print(f"Error loading control image: {e}")
 
     # ✅ Song title in center of control PNG
-    draw.text((640, cy + 100), title, font=title_font, fill="white", anchor="mm")  # Adjust y-offset
+    draw.text((640, cy + 250), title, font=title_font, fill="white", anchor="mm")  # Adjust y-offset
     draw.text((640, cy + 160), channel, font=channel_font, fill="white", anchor="mm")
     draw.text((640, cy + 210), f"Duration: {duration}", font=duration_font, fill="white", anchor="mm")
 
