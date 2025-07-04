@@ -53,7 +53,7 @@ async def generate_simple_thumb(videoid, filename):
         cy = (720 - square_size) // 2
 
         # Back square
-        back_img = Image.open("assets/back.png").convert("RGBA").resize((rect_width, rect_height)
+        back_img = Image.open("assets/back.png").convert("RGBA").resize((rect_width, rect_height)) 
         background.paste(back_img, (cx, cy), back_img)
 
         # Song thumbnail inside square
