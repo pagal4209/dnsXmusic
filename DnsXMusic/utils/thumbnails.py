@@ -78,7 +78,7 @@ async def generate_simple_thumb(videoid, filename):
     draw.text((thumb_x + 180, thumb_y + 60), channel, font=channel_font, fill="red")
 
     # Duration
-    draw.text((thumb_x + 180, thumb_y + 120), f"{duration}", font=duration_font, fill="red")
+    draw.text((500, 500), f"{duration}", font=duration_font, fill="red")
 
     # Watermark
     draw.text((640, 60), "DnsXmusic", font=watermark_font, fill=(255, 255, 255, 180), anchor="mm")
