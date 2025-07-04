@@ -74,7 +74,7 @@ async def generate_simple_thumb(videoid, filename):
         cx, cy = 0, 0
 
     # Center thumbnail (medium size) inside control
-    center_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((180, 145))
+    center_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((180, 130))
     thumb_cx = 520 - center_thumb.width // 2
     thumb_cy = 360 - center_thumb.height // 2
     background.paste(center_thumb, (thumb_cx, thumb_cy))
@@ -84,14 +84,13 @@ async def generate_simple_thumb(videoid, filename):
     draw.text((640, cy + 440), channel, font=channel_font, fill="white", anchor="mm")
     draw.text((640, cy + 490), f"Duration: {duration}", font=duration_font, fill="white", anchor="mm")
 
-    # Bottom-right watermark
+    # Top-center watermark (slightly below center)
     watermark_text = "DnsXmusic"
     text_width = draw.textlength(watermark_text, font=watermark_font)
     text_height = watermark_font.getsize(watermark_text)[1]
-    padding = 20
-    x = 1280 - text_width - padding
-    y = 720 - text_height - padding
-    draw.text((x, y), watermark_text, fill=(255, 255, 255, 200), font=watermark_font)
+    x = 1280 // 2
+    y = 100  # ← Adjust this value to move up/down (try 80–120 as needed)
+    draw.text((x, y), watermark_text, fill=(255, 255, 255, 200), font=watermark_font, anchor="ma")
 
     background.save(filename)
     return filename
