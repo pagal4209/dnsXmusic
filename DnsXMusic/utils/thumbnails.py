@@ -76,7 +76,7 @@ async def generate_simple_thumb(videoid, filename):
         cx, cy = 0, 0  # fallback if error
 
     # Draw title
-    draw_multiline_centered_text(draw, title, title_font, 1280, cy + 70)
+    draw_multiline_centered_text(draw, title, title_font, 1280, cy + 150)
 
     # Draw channel and duration
     draw.text((640, cy + 170), channel, font=channel_font, fill="white", anchor="mm")
