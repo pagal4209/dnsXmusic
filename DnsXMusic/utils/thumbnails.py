@@ -12,7 +12,7 @@ duration_font = ImageFont.truetype("assets/font.ttf", 10)
 watermark_font = ImageFont.truetype("assets/font.ttf", 20)
 
 # Apply soft black fog overlay
-def apply_black_fog(image, opacity=0.6):
+def apply_black_fog(image, opacity=0.5):
     fog = Image.new("RGBA", image.size, (0, 0, 0, int(255 * opacity)))
     return Image.alpha_composite(image.convert("RGBA"), fog)
 
@@ -40,7 +40,7 @@ async def generate_simple_thumb(videoid, filename):
     base = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((1280, 720))
 
     # Add soft black fog
-    background = apply_black_fog(base, opacity=0.6)
+    background = apply_black_fog(base, opacity=0.0)
     draw = ImageDraw.Draw(background)
 
     try:
