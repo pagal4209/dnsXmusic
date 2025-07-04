@@ -6,9 +6,10 @@ from PIL import Image, ImageDraw, ImageFont
 from youtubesearchpython.__future__ import VideosSearch
 
 # Fonts
-title_font = ImageFont.truetype("assets/font3.ttf", 42)      # Smaller for wrapped lines
+title_font = ImageFont.truetype("assets/font3.ttf", 42)
 channel_font = ImageFont.truetype("assets/font2.ttf", 34)
 duration_font = ImageFont.truetype("assets/font.ttf", 30)
+watermark_font = ImageFont.truetype("assets/font.ttf", 20)  # For watermark
 
 # Dark overlay function
 def apply_dark_overlay(image, opacity=0.7):
@@ -31,7 +32,6 @@ def draw_multiline_centered_text(draw, text, font, image_width, y_start, line_sp
     if current_line:
         lines.append(current_line)
 
-    # Draw all lines centered
     y = y_start
     for line in lines:
         draw.text((image_width // 2, y), line, font=font, fill="white", anchor="mm")
@@ -67,21 +67,31 @@ async def generate_simple_thumb(videoid, filename):
     # Load and paste control UI image
     try:
         control_img = Image.open("assets/cntrol.png").convert("RGBA")
-        control_img = control_img.resize((600, 600))  # Increased size
+        control_img = control_img.resize((600, 600))
         cx = (1280 - control_img.width) // 2
         cy = (720 - control_img.height) // 2
         dark_image.paste(control_img, (cx, cy), mask=control_img)
     except Exception as e:
         print(f"Error loading control image: {e}")
+        cx, cy = 0, 0  # fallback if error
 
-    # Draw title (wrapped & centered)
+    # Draw title
     draw_multiline_centered_text(draw, title, title_font, 1280, cy + 70)
 
-    # Draw channel and duration below title
+    # Draw channel and duration
     draw.text((640, cy + 170), channel, font=channel_font, fill="white", anchor="mm")
     draw.text((640, cy + 220), f"Duration: {duration}", font=duration_font, fill="white", anchor="mm")
-    draw.text((285, cy + 180), "DnsXmusic", (192, 192, 192), font=title_font, fill=" white", anchor="mn")
-    # Save thumbnail
+
+    # ✅ Draw bottom-right watermark
+    watermark_text = "DnsXmusic"
+    text_width = draw.textlength(watermark_text, font=watermark_font)
+    text_height = watermark_font.getsize(watermark_text)[1]
+    padding = 20
+    x = 1280 - text_width - padding
+    y = 720 - text_height - padding
+    draw.text((x, y), watermark_text, fill=(255, 255, 255, 200), font=watermark_font)
+
+    # Save
     dark_image.save(filename)
     return filename
 
