@@ -11,7 +11,7 @@ channel_font = ImageFont.truetype("assets/font2.ttf", 34)
 duration_font = ImageFont.truetype("assets/font.ttf", 30)
 watermark_font = ImageFont.truetype("assets/font.ttf", 20)
 
-# Full red blur overlay
+# Red blur background
 def apply_red_blur_overlay(image, opacity=0.6):
     image = image.convert("RGBA")
     blurred = image.filter(ImageFilter.GaussianBlur(25))
@@ -20,7 +20,7 @@ def apply_red_blur_overlay(image, opacity=0.6):
     red_blurred = ImageEnhance.Brightness(red_blurred).enhance(0.9)
     return red_blurred
 
-# Main thumbnail generator
+# Main function
 async def generate_simple_thumb(videoid, filename):
     if os.path.isfile(filename):
         return filename
@@ -40,50 +40,54 @@ async def generate_simple_thumb(videoid, filename):
                 async with aiofiles.open(f"cache/thumb_{videoid}.jpg", "wb") as f:
                     await f.write(await resp.read())
 
-    # Base background
-    base = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((512, 512))
+    # Load base and apply red blur
+    base = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((1280, 720))
     background = apply_red_blur_overlay(base)
     draw = ImageDraw.Draw(background)
 
-    # Centered back.png, song thumbnail, and control overlay
     try:
-        # Load and center back.png
-        back_img = Image.open("assets/back.png").convert("RGBA").resize((512, 512))
-        cx = (1280 - back_img.width) // 2
-        cy = (720 - back_img.height) // 2
+        # Square size
+        square_size = 400
+
+        # Center coordinates for square
+        cx = (1280 - square_size) // 2
+        cy = (720 - square_size) // 2
+
+        # Back square
+        back_img = Image.open("assets/back.png").convert("RGBA").resize((square_size, square_size))
         background.paste(back_img, (cx, cy), back_img)
 
-        # Load and center song thumbnail on back.png
+        # Song thumbnail inside square
         song_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((160, 160))
-        thumb_x = cx + (back_img.width - 160) // 2
-        thumb_y = cy + (back_img.height - 160) // 2
+        thumb_x = cx + (square_size - 160) // 2
+        thumb_y = cy + 40
         background.paste(song_thumb, (thumb_x, thumb_y), song_thumb)
 
-        # Load and overlay cntrol.png
-        control_img = Image.open("assets/cntrol.png").convert("RGBA").resize((720, 400))
+        # Overlay control.png
+        control_img = Image.open("assets/cntrol.png").convert("RGBA").resize((square_size, square_size))
         background.paste(control_img, (cx, cy), control_img)
 
     except Exception as e:
-        print(f"Error loading back/control images: {e}")
+        print(f"Error loading images: {e}")
         return None
 
-    # Title text
+    # Title
     first_word = title.split()[0] if title else ""
-    draw.text((thumb_x + 180, thumb_y + 10), first_word, font=title_font, fill="white")
+    draw.text((thumb_x, thumb_y + 170), first_word, font=title_font, fill="white")
 
-    # Channel name
-    draw.text((thumb_x + 180, thumb_y + 70), channel, font=channel_font, fill="white")
+    # Channel
+    draw.text((thumb_x, thumb_y + 220), channel, font=channel_font, fill="white")
 
     # Duration
-    draw.text((thumb_x + 180, thumb_y + 120), f"Duration: {duration}", font=duration_font, fill="white")
+    draw.text((thumb_x, thumb_y + 270), f"Duration: {duration}", font=duration_font, fill="white")
 
-    # Optional watermark at top
+    # Watermark
     draw.text((640, 60), "DnsXmusic", font=watermark_font, fill=(255, 255, 255, 180), anchor="mm")
 
     background.save(filename)
     return filename
 
-# Shortcuts
+# Shortcut functions
 async def gen_qthumb(videoid):
     return await generate_simple_thumb(videoid, f"cache/{videoid}_qv4.png")
 
