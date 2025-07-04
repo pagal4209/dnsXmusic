@@ -11,11 +11,20 @@ channel_font = ImageFont.truetype("assets/font2.ttf", 34)
 duration_font = ImageFont.truetype("assets/font.ttf", 30)
 watermark_font = ImageFont.truetype("assets/font.ttf", 20)
 
-# Dark overlay with red tint and blur
+# Box-only red blur overlay
 def apply_red_blur_overlay(image, opacity=0.6):
+    image = image.convert("RGBA")
     blurred = image.filter(ImageFilter.GaussianBlur(25))
-    red_overlay = Image.new("RGBA", image.size, (255, 49, 99, int(90 * opacity)))
-    return Image.alpha_composite(blurred.convert("RGBA"), red_overlay)
+    
+    # Blur + red tint in selected box
+    box = (120, 120, 520, 480)
+    cropped_blur = blurred.crop(box)
+    red_overlay = Image.new("RGBA", (box[2] - box[0], box[3] - box[1]), (255, 49, 99, int(90 * opacity)))
+    red_blur_box = Image.alpha_composite(cropped_blur, red_overlay)
+    
+    result = image.copy()
+    result.paste(red_blur_box, box)
+    return result
 
 # Multiline text wrapper and centered drawing
 def draw_multiline_centered_text(draw, text, font, image_width, y_start, line_spacing=10, max_width=1100):
@@ -73,7 +82,7 @@ async def generate_simple_thumb(videoid, filename):
         print(f"Error loading control image: {e}")
         cx, cy = 0, 0
 
-    # Center thumbnail (medium size) inside control
+    # Center thumbnail (smaller and inside control)
     center_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((180, 130))
     thumb_cx = 520 - center_thumb.width // 2
     thumb_cy = 360 - center_thumb.height // 2
@@ -84,12 +93,12 @@ async def generate_simple_thumb(videoid, filename):
     draw.text((640, cy + 440), channel, font=channel_font, fill="white", anchor="mm")
     draw.text((640, cy + 490), f"Duration: {duration}", font=duration_font, fill="white", anchor="mm")
 
-    # Top-center watermark (slightly below center)
+    # Top-center watermark (slightly below top)
     watermark_text = "DnsXmusic"
     text_width = draw.textlength(watermark_text, font=watermark_font)
     text_height = watermark_font.getsize(watermark_text)[1]
     x = 1280 // 2
-    y = 100  # ← Adjust this value to move up/down (try 80–120 as needed)
+    y = 100
     draw.text((x, y), watermark_text, fill=(255, 255, 255, 200), font=watermark_font, anchor="ma")
 
     background.save(filename)
