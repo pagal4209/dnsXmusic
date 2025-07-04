@@ -74,8 +74,8 @@ async def generate_simple_thumb(videoid, filename):
         cx, cy = 0, 0
 
     # Center thumbnail (medium size) inside control
-    center_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((180, 150))
-    thumb_cx = 510 - center_thumb.width // 2
+    center_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((180, 145))
+    thumb_cx = 520 - center_thumb.width // 2
     thumb_cy = 360 - center_thumb.height // 2
     background.paste(center_thumb, (thumb_cx, thumb_cy))
 
