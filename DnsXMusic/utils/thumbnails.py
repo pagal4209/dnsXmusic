@@ -15,7 +15,6 @@ watermark_font = ImageFont.truetype("assets/font.ttf", 20)
 def apply_red_blur_overlay(image, opacity=0.6):
     image = image.convert("RGBA")
     blurred = image.filter(ImageFilter.GaussianBlur(25))
-
     red_overlay = Image.new("RGBA", image.size, (255, 49, 99, int(255 * opacity)))
     red_blurred = Image.alpha_composite(blurred, red_overlay)
     red_blurred = ImageEnhance.Brightness(red_blurred).enhance(0.9)
@@ -46,27 +45,31 @@ async def generate_simple_thumb(videoid, filename):
     background = apply_red_blur_overlay(base)
     draw = ImageDraw.Draw(background)
 
-    # Centered control box
+    # Centered back.png, song thumbnail, and control overlay
     try:
-        control_img = Image.open("assets/cntrol.png").convert("RGBA").resize((720, 400))
-        cx = (1280 - control_img.width) // 2
-        cy = (720 - control_img.height) // 2
-        background.paste(control_img, (cx, cy), control_img)
-    except Exception as e:
-        print(f"Error loading cntrol.png: {e}")
-        return None
+        # Load and center back.png
+        back_img = Image.open("assets/back.png").convert("RGBA").resize((720, 400))
+        cx = (1280 - back_img.width) // 2
+        cy = (720 - back_img.height) // 2
+        background.paste(back_img, (cx, cy), back_img)
 
-    # Song/Album thumbnail inside the player box
-    song_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((160, 160))
-    thumb_x = cx + 40
-    thumb_y = cy + 30
-    background.paste(song_thumb, (thumb_x, thumb_y), song_thumb)
+        # Load and center song thumbnail on back.png
+        song_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((160, 160))
+        thumb_x = cx + (back_img.width - 160) // 2
+        thumb_y = cy + (back_img.height - 160) // 2
+        background.paste(song_thumb, (thumb_x, thumb_y), song_thumb)
+
+        # Load and overlay cntrol.png
+        control_img = Image.open("assets/cntrol.png").convert("RGBA").resize((720, 400))
+        background.paste(control_img, (cx, cy), control_img)
+
+    except Exception as e:
+        print(f"Error loading back/control images: {e}")
+        return None
 
     # Title text
     first_word = title.split()[0] if title else ""
-    full_title = f"{first_word}"
-    draw.text((thumb_x + 180, thumb_y + 10), full_title, font=title_font, fill="white")
-
+    draw.text((thumb_x + 180, thumb_y + 10), first_word, font=title_font, fill="white")
 
     # Channel name
     draw.text((thumb_x + 180, thumb_y + 70), channel, font=channel_font, fill="white")
