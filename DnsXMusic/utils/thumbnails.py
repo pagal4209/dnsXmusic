@@ -15,7 +15,7 @@ watermark_font = ImageFont.truetype("assets/font.ttf", 20)
 def apply_red_blur_overlay(image, opacity=0.6):
     image = image.convert("RGBA")
     blurred = image.filter(ImageFilter.GaussianBlur(25))
-    red_overlay = Image.new("RGBA", image.size, (255, 49, 99, int(255 * opacity)))
+    red_overlay = Image.new("RGBA", image.size, (255, 49, 99, int(100 * opacity)))
     red_blurred = Image.alpha_composite(blurred, red_overlay)
     red_blurred = ImageEnhance.Brightness(red_blurred).enhance(0.9)
     return red_blurred
@@ -47,7 +47,7 @@ async def generate_simple_thumb(videoid, filename):
 
     try:
         # Square size
-        square_size = 520
+        square_size = 550
 
         # Center coordinates for square
         cx = (1280 - square_size) // 2
@@ -58,9 +58,9 @@ async def generate_simple_thumb(videoid, filename):
         background.paste(back_img, (cx, cy), back_img)
 
         # Song thumbnail inside square
-        song_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((160, 160))
-        thumb_x = cx + (square_size - 160) // 2
-        thumb_y = cy + 60
+        song_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((200, 200))
+        thumb_x = cx + (square_size - 200) // 2
+        thumb_y = cy + 70
         background.paste(song_thumb, (thumb_x, thumb_y), song_thumb)
 
         # Overlay control.png
@@ -79,7 +79,7 @@ async def generate_simple_thumb(videoid, filename):
     draw.text((thumb_x, thumb_y + 220), channel, font=channel_font, fill="red")
 
     # Duration
-    draw.text((thumb_x, thumb_y + 270), f"Duration: {duration}", font=duration_font, fill="white")
+    draw.text((thumb_x, thumb_y + 270), f"{duration}", font=duration_font, fill="red")
 
     # Watermark
     draw.text((640, 60), "DnsXmusic", font=watermark_font, fill=(255, 255, 255, 180), anchor="mm")
