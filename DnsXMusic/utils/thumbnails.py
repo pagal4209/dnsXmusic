@@ -12,7 +12,7 @@ duration_font = ImageFont.truetype("assets/font.ttf", 10)
 watermark_font = ImageFont.truetype("assets/font.ttf", 20)
 
 # Apply soft black fog overlay
-def apply_black_fog(image, opacity=0.3):
+def apply_black_fog(image, opacity=1.2):
     fog = Image.new("RGBA", image.size, (0, 0, 0, int(255 * opacity)))
     return Image.alpha_composite(image.convert("RGBA"), fog)
 
