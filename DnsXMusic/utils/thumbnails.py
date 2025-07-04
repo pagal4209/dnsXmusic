@@ -70,9 +70,25 @@ async def generate_simple_thumb(videoid, filename):
         print(f"Error loading images: {e}")
         return None
 
-    # Show first 3 words of the title, then add "..."
-    title_words = title.split()
-    short_title = " ".join(title_words[:3]) + "..." if len(title_words) > 3 else title
+    # Show words that fit within 10 letters, then add "..."
+max_chars = 10
+title_words = title.split()
+short_title = ""
+total_chars = 0
+
+for word in title_words:
+    if total_chars + len(word) + (1 if short_title else 0) <= max_chars:
+        short_title += (" " if short_title else "") + word
+        total_chars += len(word) + (1 if short_title else 0)
+    else:
+        break
+
+# Add ellipsis if title is longer than what we displayed
+    short_title = short_title.strip()
+    if short_title != title:
+    short_title += "..."
+
+# Draw on image
     draw.text((500, 380), short_title, font=title_font, fill="black")
 
     # Channel
