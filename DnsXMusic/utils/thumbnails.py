@@ -14,7 +14,7 @@ watermark_font = ImageFont.truetype("assets/font.ttf", 20)
 # Dark overlay with red tint and blur
 def apply_red_blur_overlay(image, opacity=0.6):
     blurred = image.filter(ImageFilter.GaussianBlur(25))
-    red_overlay = Image.new("RGBA", image.size, (255, 0, 0, int(180 * opacity)))
+    red_overlay = Image.new("RGBA", image.size, (255, 49, 99, int(180 * opacity)))
     return Image.alpha_composite(blurred.convert("RGBA"), red_overlay)
 
 # Multiline text wrapper and centered drawing
