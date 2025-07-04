@@ -45,24 +45,24 @@ async def generate_simple_thumb(videoid, filename):
 
     try:
         # Square size
-        square_size = 550
+        rect_width = 700
+        rect_height = 400
 
         # Center coordinates for square
         cx = (1280 - square_size) // 2
         cy = (720 - square_size) // 2
 
         # Back square
-        back_img = Image.open("assets/back.png").convert("RGBA").resize((square_size, square_size))
+        back_img = Image.open("assets/back.png").convert("RGBA").resize((rect_width, rect_height)
         background.paste(back_img, (cx, cy), back_img)
 
         # Song thumbnail inside square
-        song_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((300, 300))
-        thumb_x = cx + (square_size - 300) // 2
-        thumb_y = cy + 70
+        song_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((160, 160))
+        thumb_x = cx + 40
+        thumb_y = cy + (rect_height - 160) // 2
         background.paste(song_thumb, (thumb_x, thumb_y), song_thumb)
-
         # Overlay control.png
-        control_img = Image.open("assets/cntrol.png").convert("RGBA").resize((square_size, square_size))
+        control_img = Image.open("assets/cntrol.png").convert("RGBA").resize((rect_width, rect_height))
         background.paste(control_img, (cx, cy), control_img)
 
     except Exception as e:
