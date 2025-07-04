@@ -40,53 +40,61 @@ def draw_multiline_centered_text(draw, text, font, image_width, y_start, line_sp
 
 # Main thumbnail generator
 async def generate_simple_thumb(videoid, filename):
-    if os.path.isfile(filename):
-        return filename
+    if os.path.isfile(filename):
+        return filename
 
-    url = f"https://www.youtube.com/watch?v={videoid}"
-    results = VideosSearch(url, limit=1)
-    result = (await results.next())["result"][0]
+    url = f"https://www.youtube.com/watch?v={videoid}"
+    results = VideosSearch(url, limit=1)
+    result = (await results.next())["result"][0]
 
-    title = re.sub(r"\W+", " ", result.get("title", "Unknown Title")).title()
-    channel = result.get("channel", {}).get("name", "Unknown Channel")
-    duration = result.get("duration", "0:00")
-    thumbnail_url = result["thumbnails"][0]["url"].split("?")[0]
+    title = re.sub(r"\W+", " ", result.get("title", "Unknown Title")).title()
+    channel = result.get("channel", {}).get("name", "Unknown Channel")
+    duration = result.get("duration", "0:00")
+    thumbnail_url = result["thumbnails"][0]["url"].split("?")[0]
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get(thumbnail_url) as resp:
-            if resp.status == 200:
-                async with aiofiles.open(f"cache/thumb_{videoid}.jpg", "wb") as f:
-                    await f.write(await resp.read())
+    async with aiohttp.ClientSession() as session:
+        async with session.get(thumbnail_url) as resp:
+            if resp.status == 200:
+                async with aiofiles.open(f"cache/thumb_{videoid}.jpg", "wb") as f:
+                    await f.write(await resp.read())
 
-    base = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((1280, 720))
-    background = apply_red_blur_overlay(base)
-    draw = ImageDraw.Draw(background)
+    base = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((1280, 720))
+    background = apply_red_blur_overlay(base)
+    draw = ImageDraw.Draw(background)
 
-    try:
-        control_img = Image.open("assets/cntrol.png").convert("RGBA")
-        control_img = control_img.resize((600, 600))
-        cx = (1280 - control_img.width) // 2
-        cy = (720 - control_img.height) // 2
-        background.paste(control_img, (cx, cy), mask=control_img)
-    except Exception as e:
-        print(f"Error loading control image: {e}")
-        cx, cy = 0, 0
+    # Load and paste control overlay
+    try:
+        control_img = Image.open("assets/cntrol.png").convert("RGBA")
+        control_img = control_img.resize((600, 600))
+        cx = (1280 - control_img.width) // 2
+        cy = (720 - control_img.height) // 2
+        background.paste(control_img, (cx, cy), mask=control_img)
+    except Exception as e:
+        print(f"Error loading control image: {e}")
+        cx, cy = 0, 0
 
-    draw_multiline_centered_text(draw, title, title_font, 1280, cy + 70)
-    draw.text((640, cy + 170), channel, font=channel_font, fill="white", anchor="mm")
-    draw.text((640, cy + 220), f"Duration: {duration}", font=duration_font, fill="white", anchor="mm")
+    # Center thumbnail (medium size) inside control
+    center_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((400, 225))
+    thumb_cx = 640 - center_thumb.width // 2
+    thumb_cy = 360 - center_thumb.height // 2
+    background.paste(center_thumb, (thumb_cx, thumb_cy))
 
-    # Bottom-right watermark
-    watermark_text = "DnsXmusic"
-    text_width = draw.textlength(watermark_text, font=watermark_font)
-    text_height = watermark_font.getsize(watermark_text)[1]
-    padding = 20
-    x = 1280 - text_width - padding
-    y = 720 - text_height - padding
-    draw.text((x, y), watermark_text, fill=(255, 255, 255, 200), font=watermark_font)
+    # Draw Title, Channel, and Duration
+    draw_multiline_centered_text(draw, title, title_font, 1280, cy + 350)
+    draw.text((640, cy + 440), channel, font=channel_font, fill="white", anchor="mm")
+    draw.text((640, cy + 490), f"Duration: {duration}", font=duration_font, fill="white", anchor="mm")
 
-    background.save(filename)
-    return filename
+    # Bottom-right watermark
+    watermark_text = "DnsXmusic"
+    text_width = draw.textlength(watermark_text, font=watermark_font)
+    text_height = watermark_font.getsize(watermark_text)[1]
+    padding = 20
+    x = 1280 - text_width - padding
+    y = 720 - text_height - padding
+    draw.text((x, y), watermark_text, fill=(255, 255, 255, 200), font=watermark_font)
+
+    background.save(filename)
+    return filename
 
 # Shortcut functions
 async def gen_qthumb(videoid):
