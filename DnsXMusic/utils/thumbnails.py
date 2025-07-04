@@ -80,7 +80,7 @@ async def generate_simple_thumb(videoid, filename):
     # Draw channel and duration below title
     draw.text((640, cy + 170), channel, font=channel_font, fill="white", anchor="mm")
     draw.text((640, cy + 220), f"Duration: {duration}", font=duration_font, fill="white", anchor="mm")
-
+    draw.text((285, cy + 180), "DnsXmusic", (192, 192, 192), font=title_font, fill=" white", anchor="mn")
     # Save thumbnail
     dark_image.save(filename)
     return filename
