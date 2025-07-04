@@ -63,7 +63,10 @@ async def generate_simple_thumb(videoid, filename):
     background.paste(song_thumb, (thumb_x, thumb_y), song_thumb)
 
     # Title text
-    draw.text((thumb_x + 180, thumb_y + 10), title, font=title_font, fill="white")
+    first_word = title.split()[0] if title else ""
+    full_title = f"{first_word}  •  {title}"
+    draw.text((thumb_x + 180, thumb_y + 10), full_title, font=title_font, fill="white")
+
 
     # Channel name
     draw.text((thumb_x + 180, thumb_y + 70), channel, font=channel_font, fill="white")
