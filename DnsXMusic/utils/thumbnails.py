@@ -58,8 +58,8 @@ async def generate_simple_thumb(videoid, filename):
         background.paste(back_img, (cx, cy), back_img)
 
         # Song thumbnail inside square
-        song_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((200, 200))
-        thumb_x = cx + (square_size - 200) // 2
+        song_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((300, 300))
+        thumb_x = cx + (square_size - 300) // 2
         thumb_y = cy + 70
         background.paste(song_thumb, (thumb_x, thumb_y), song_thumb)
 
