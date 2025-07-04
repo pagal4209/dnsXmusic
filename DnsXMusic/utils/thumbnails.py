@@ -2,7 +2,7 @@ import os
 import re
 import aiohttp
 import aiofiles
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 from youtubesearchpython.__future__ import VideosSearch
 
 # Fonts
@@ -11,26 +11,29 @@ channel_font = ImageFont.truetype("assets/font2.ttf", 34)
 duration_font = ImageFont.truetype("assets/font.ttf", 30)
 watermark_font = ImageFont.truetype("assets/font.ttf", 20)
 
-# Box-only red blur overlay
+# Red blur box with rounded corners
 def apply_red_blur_overlay(image, opacity=0.6):
     image = image.convert("RGBA")
     blurred = image.filter(ImageFilter.GaussianBlur(25))
-    
-    # Blur + red tint in selected box
+
     box = (120, 120, 520, 480)
     cropped_blur = blurred.crop(box)
-    red_overlay = Image.new("RGBA", (box[2] - box[0], box[3] - box[1]), (255, 49, 99, int(90 * opacity)))
+
+    red_overlay = Image.new("RGBA", (box[2] - box[0], box[3] - box[1]), (255, 49, 99, int(255 * opacity)))
     red_blur_box = Image.alpha_composite(cropped_blur, red_overlay)
-    
+    red_blur_box = ImageEnhance.Brightness(red_blur_box).enhance(0.5)
+
+    mask = Image.new("L", (box[2] - box[0], box[3] - box[1]), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, box[2]-box[0], box[3]-box[1]), radius=40, fill=255)
+
     result = image.copy()
-    result.paste(red_blur_box, box)
+    result.paste(red_blur_box, box, mask)
     return result
 
-# Multiline text wrapper and centered drawing
+# Multiline title
 def draw_multiline_centered_text(draw, text, font, image_width, y_start, line_spacing=10, max_width=1100):
     words = text.split()
-    lines = []
-    current_line = ""
+    lines, current_line = [], ""
     for word in words:
         test_line = current_line + " " + word if current_line else word
         w, _ = draw.textsize(test_line, font=font)
@@ -47,7 +50,7 @@ def draw_multiline_centered_text(draw, text, font, image_width, y_start, line_sp
         draw.text((image_width // 2, y), line, font=font, fill="white", anchor="mm")
         y += font.getsize(line)[1] + line_spacing
 
-# Main thumbnail generator
+# Main function
 async def generate_simple_thumb(videoid, filename):
     if os.path.isfile(filename):
         return filename
@@ -71,10 +74,9 @@ async def generate_simple_thumb(videoid, filename):
     background = apply_red_blur_overlay(base)
     draw = ImageDraw.Draw(background)
 
-    # Load and paste control overlay
+    # Control overlay
     try:
-        control_img = Image.open("assets/cntrol.png").convert("RGBA")
-        control_img = control_img.resize((600, 600))
+        control_img = Image.open("assets/cntrol.png").convert("RGBA").resize((600, 600))
         cx = (1280 - control_img.width) // 2
         cy = (720 - control_img.height) // 2
         background.paste(control_img, (cx, cy), mask=control_img)
@@ -82,29 +84,24 @@ async def generate_simple_thumb(videoid, filename):
         print(f"Error loading control image: {e}")
         cx, cy = 0, 0
 
-    # Center thumbnail (smaller and inside control)
+    # Center thumbnail
     center_thumb = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((180, 130))
     thumb_cx = 520 - center_thumb.width // 2
     thumb_cy = 360 - center_thumb.height // 2
-    background.paste(center_thumb, (thumb_cx, thumb_cy))
+    background.paste(center_thumb, (thumb_cx, thumb_cy), center_thumb)
 
-    # Draw Title, Channel, and Duration
+    # Draw text
     draw_multiline_centered_text(draw, title, title_font, 1280, cy + 350)
     draw.text((640, cy + 440), channel, font=channel_font, fill="white", anchor="mm")
     draw.text((640, cy + 490), f"Duration: {duration}", font=duration_font, fill="white", anchor="mm")
 
-    # Top-center watermark (slightly below top)
-    watermark_text = "DnsXmusic"
-    text_width = draw.textlength(watermark_text, font=watermark_font)
-    text_height = watermark_font.getsize(watermark_text)[1]
-    x = 1280 // 2
-    y = 100
-    draw.text((x, y), watermark_text, fill=(255, 255, 255, 200), font=watermark_font, anchor="ma")
+    # Top watermark
+    draw.text((640, 100), "DnsXmusic", fill=(255, 255, 255, 200), font=watermark_font, anchor="ma")
 
     background.save(filename)
     return filename
 
-# Shortcut functions
+# Shortcuts
 async def gen_qthumb(videoid):
     return await generate_simple_thumb(videoid, f"cache/{videoid}_qv4.png")
 
