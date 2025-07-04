@@ -64,7 +64,7 @@ async def generate_simple_thumb(videoid, filename):
 
     # Title text
     first_word = title.split()[0] if title else ""
-    full_title = f"{first_word}  •  {title}"
+    full_title = f"{first_word}"
     draw.text((thumb_x + 180, thumb_y + 10), full_title, font=title_font, fill="white")
 
 
