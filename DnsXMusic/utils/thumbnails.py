@@ -41,14 +41,14 @@ async def generate_simple_thumb(videoid, filename):
                     await f.write(await resp.read())
 
     # Base background
-    base = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((1280, 720))
+    base = Image.open(f"cache/thumb_{videoid}.jpg").convert("RGBA").resize((512, 512))
     background = apply_red_blur_overlay(base)
     draw = ImageDraw.Draw(background)
 
     # Centered back.png, song thumbnail, and control overlay
     try:
         # Load and center back.png
-        back_img = Image.open("assets/back.png").convert("RGBA").resize((720, 400))
+        back_img = Image.open("assets/back.png").convert("RGBA").resize((512, 512))
         cx = (1280 - back_img.width) // 2
         cy = (720 - back_img.height) // 2
         background.paste(back_img, (cx, cy), back_img)
